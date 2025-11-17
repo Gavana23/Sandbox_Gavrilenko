@@ -3,33 +3,44 @@ package pages;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
-import java.time.Duration;
 
-public class LoginPage {
-    WebDriver browser;
+public class LoginPage extends BasePage{
 
-    private static final By ZIP_CODE_FIELD = By.xpath("//input[@name = 'zip_code']");
-    private static final By CONTINUE = By.xpath("//input[@value = 'Continue']");
+    private static final By loginInput = By.xpath("//input[@data-test = 'username']");
+    private static final By passInput = By.xpath("//input[@data-test = 'password']");
+    private static final By loginBtn = By.cssSelector("#login-button");
+    private static final By errorMsg = By.xpath("//h3[@data-test = 'error']");
 
-    public LoginPage(WebDriver browser) {
-        this.browser = browser;
+    public LoginPage(WebDriver driver) {
+        super(driver);
     }
 
     public void open() {
-        browser.get("https://www.sharelane.com/cgi-bin/register.py");
+        driver.get(BASE_URL);
     }
 
-    public void login(String zipCode) {
-        browser.findElement(ZIP_CODE_FIELD).sendKeys(zipCode);
-        browser.findElement(CONTINUE).click();
+    public void login(String loginName, String password ) {
+        fillInLogin(loginName);
+        fillPassword(password);
+        pressLoginBtn();
+    }
+
+    public void fillInLogin(String loginName) {
+        driver.findElement(loginInput).sendKeys(loginName);
+    }
+
+    public void fillPassword(String password) {
+        driver.findElement(passInput).sendKeys(password);
+    }
+
+    public void pressLoginBtn() {
+        driver.findElement(loginBtn).click();
     }
 
     public String checkErrorMsg() {
-        WebDriverWait wait = new WebDriverWait(browser, Duration.ofSeconds(3));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".error_message")));
-        return browser.findElement(By.cssSelector(".error_message")).getText();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(errorMsg));
+        return driver.findElement(errorMsg).getText();
     }
 
 
